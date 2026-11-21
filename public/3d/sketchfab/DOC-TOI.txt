@@ -1,0 +1,17 @@
+THƯ MỤC MÔ HÌNH TẢI TỪ SKETCHFAB
+=================================
+
+Đặt các file .glb tải từ Sketchfab vào đây, với ĐÚNG tên sau:
+
+  trong-dong.glb   Trống đồng Đông Sơn – Việt Nam (ndnguyen3d)
+                   https://sketchfab.com/3d-models/trong-ong-ong-son-viet-nam-21e418a517a74b49a17ebbad94ba26c0
+
+  voi.glb          Elephant – Realistic (MONKEY D. LUFFY)
+                   https://sketchfab.com/3d-models/elephant-realistic-a9e7ac1424fc4c62a528a3e24201e61a
+
+  chien-binh.glb   Tribal Man (Çağhan Büyükavcı)
+                   https://sketchfab.com/3d-models/tribal-man-f9efa0a9e9e048849e5240947a1f0f26
+
+Cách tải: đăng nhập Sketchfab → mở link → Download 3D Model → chọn "glTF Binary (.glb)".
+Không cần sửa code: mô hình tự xuất hiện trong cảnh 3D, tự co giãn đúng kích thước thật.
+Cả ba mô hình dùng giấy phép CC BY 4.0 — tên tác giả đã được ghi sẵn trong mục "Nguồn tư liệu" của trang mô phỏng.

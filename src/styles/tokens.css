@@ -1,0 +1,173 @@
+/* ==========================================================
+   HỆ THỐNG THIẾT KẾ — "Dòng chảy lịch sử"
+   Bảng màu lấy cảm hứng từ giấy dó cũ, mực nâu, son đỏ và đồng thau
+   của trống đồng Đông Sơn.
+   ========================================================== */
+:root {
+  /* Nền */
+  --paper: #f4ead8;
+  --paper-2: #ecdfc6;
+  --paper-3: #e3d2b2;
+  --card: #fbf6ec;
+
+  /* Chữ */
+  --ink: #2a1c13;
+  --ink-2: #57432f;
+  --ink-3: #7a6550;
+
+  /* Đường kẻ */
+  --line: #dac7a4;
+  --line-2: #c4ab80;
+
+  /* Màu nhấn */
+  --crimson: #8f1d1d;
+  --crimson-solid: #8f1d1d; /* nền đỏ có chữ trắng (nút, huy hiệu) */
+  --crimson-2: #6c1212;
+  --crimson-soft: #f3dcd3;
+  --bronze: #a87a35;
+  --bronze-2: #d4ad66;
+  --jade: #2f6a55;
+  --jade-soft: #dcebe2;
+  --danger: #a3271f;
+  --danger-soft: #f6dcd6;
+
+  /* Cuộn phim */
+  --film: #1c140f;
+  --film-2: #2b2018;
+  --film-ink: #f1e6d2;
+  --film-ink-2: #c9b79a;
+
+  /* Chữ */
+  /* Tiêu đề: Playfair Display — chữ có chân cổ điển, nét đậm đầy đặn, đủ dấu tiếng Việt */
+  --font-display: 'Playfair Display', 'Noto Serif', Georgia, 'Times New Roman', serif;
+  --fw-display: 700;
+  --fw-display-hero: 800;
+  --font-body: 'Be Vietnam Pro', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* Thang cỡ chữ (tỉ lệ ~1.25) */
+  --fs-xs: 0.8125rem;   /* 13 */
+  --fs-s: 0.90625rem;   /* 14.5 */
+  --fs-base: 1.0625rem; /* 17 */
+  --fs-m: 1.1875rem;    /* 19 */
+  --fs-l: 1.4375rem;    /* 23 */
+  --fs-xl: 1.8125rem;   /* 29 */
+  --fs-2xl: clamp(1.9rem, 1.4rem + 1.6vw, 2.5rem);
+  --fs-3xl: clamp(2.3rem, 1.6rem + 2.8vw, 3.6rem);
+  --fs-hero: clamp(3.1rem, 1.2rem + 8.4vw, 8.2rem);
+
+  /* Bo góc & bóng */
+  --r-s: 6px;
+  --r-m: 12px;
+  --r-l: 20px;
+  --shadow-1: 0 1px 2px rgb(60 35 15 / 0.08), 0 10px 24px -14px rgb(60 35 15 / 0.35);
+  --shadow-2: 0 2px 6px rgb(60 35 15 / 0.1), 0 28px 56px -24px rgb(60 35 15 / 0.5);
+
+  /* Bố cục */
+  --container: 1200px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --nav-h: 72px;
+
+  /* Chuyển động */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 160ms;
+  --t-med: 260ms;
+
+  /* Màu thành phần (đổi theo chế độ sáng/tối) */
+  --nav-bg: rgb(244 234 216 / 0.86);
+  --chip-bg: rgb(251 246 236 / 0.72);
+  --chip-border: rgb(143 29 29 / 0.32);
+  --hover-tint: rgb(255 255 255 / 0.35);
+  --note-bg: #f7ead0;
+  --note-ink: #6b4a10;
+  --input-bg: #ffffff;
+  --title-glow: rgb(251 246 236 / 0.6);
+  --hero-veil-1: rgb(244 234 216 / 0.88);
+  --hero-veil-2: rgb(244 234 216 / 0.35);
+  --hero-veil-3: rgb(244 234 216 / 0.15);
+  --dot: rgb(143 29 29 / 0.28);
+  --dot-hover: rgb(143 29 29 / 0.5);
+  --dot-track: rgb(143 29 29 / 0.18);
+  --map-sea-1: #e9e3cf;
+  --map-sea-2: #dcd3b8;
+  --map-neighbor: #e6d9bb;
+  --map-neighbor-line: #c9b48e;
+  --map-land: #f6e7c4;
+  --map-coast: #8f1d1d;
+  --map-hatch: #cdbb95;
+  --map-country: #9a8667;
+  --map-sea-label: #7d8f8a;
+  --map-island: #6c1212;
+  --map-pin-ring: #fbf6ec;
+
+  color-scheme: light;
+}
+
+/* ==========================================================
+   CHẾ ĐỘ TỐI — "đêm đọc sử": nền gỗ sẫm, chữ màu giấy dó,
+   đỏ son sáng hơn để dễ đọc trên nền tối.
+   (Thuộc tính data-theme được đặt trong index.html trước khi trang hiện ra)
+   ========================================================== */
+:root[data-theme='dark'] {
+  --paper: #16110d;
+  --paper-2: #1e1712;
+  --paper-3: #2a2119;
+  --card: #211913;
+
+  --ink: #f1e6d3;
+  --ink-2: #cfbea2;
+  --ink-3: #a4917b;
+
+  --line: #3a2e23;
+  --line-2: #57452f;
+
+  --crimson: #e57565;
+  --crimson-solid: #b23a2f;
+  --crimson-2: #c4473a;
+  --crimson-soft: #3b1f1a;
+  --jade: #3f876b;
+  --jade-soft: #1c3229;
+  --danger: #d65a4c;
+  --danger-soft: #3d1c18;
+
+  --film: #0d0a07;
+  --film-2: #1b140f;
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 24px -14px rgb(0 0 0 / 0.6);
+  --shadow-2: 0 2px 6px rgb(0 0 0 / 0.35), 0 28px 56px -24px rgb(0 0 0 / 0.75);
+
+  --nav-bg: rgb(22 17 13 / 0.86);
+  --chip-bg: rgb(33 25 19 / 0.78);
+  --chip-border: rgb(229 117 101 / 0.4);
+  --hover-tint: rgb(255 255 255 / 0.06);
+  --note-bg: #2f2416;
+  --note-ink: #e7c98a;
+  --input-bg: #1b1510;
+  --title-glow: rgb(0 0 0 / 0.35);
+  --hero-veil-1: rgb(22 17 13 / 0.9);
+  --hero-veil-2: rgb(22 17 13 / 0.74);
+  --hero-veil-3: rgb(22 17 13 / 0.58);
+  --dot: rgb(229 117 101 / 0.35);
+  --dot-hover: rgb(229 117 101 / 0.6);
+  --dot-track: rgb(229 117 101 / 0.22);
+  --map-sea-1: #1f2a2b;
+  --map-sea-2: #172022;
+  --map-neighbor: #2a231b;
+  --map-neighbor-line: #4a3d2e;
+  --map-land: #3a2d20;
+  --map-coast: #d26a5a;
+  --map-hatch: #4a3d2e;
+  --map-country: #8f7d63;
+  --map-sea-label: #86aaa1;
+  --map-island: #e8978a;
+  --map-pin-ring: #16110d;
+
+  color-scheme: dark;
+}
+
+/* Hiệu ứng chuyển màu êm khi bấm nút sáng/tối */
+html.theme-anim,
+html.theme-anim *,
+html.theme-anim *::before,
+html.theme-anim *::after {
+  transition: background-color 350ms ease, color 350ms ease, border-color 350ms ease, fill 350ms ease, stroke 350ms ease !important;
+}

@@ -1,0 +1,640 @@
+/* ==========================================================
+   TRANG MÔ PHỎNG 3D
+   ========================================================== */
+.sim {
+  position: fixed;
+  inset: 0;
+  background: #1a1410;
+  color: var(--film-ink);
+  overflow: hidden;
+  /* clip: không cho trình duyệt tự cuộn lệch khung khi một điểm chú thích ngoài màn hình được chọn */
+  overflow: clip;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.sim-stage {
+  position: absolute;
+  inset: 0;
+}
+.sim-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
+  cursor: grab;
+}
+.sim-canvas:active {
+  cursor: grabbing;
+}
+
+.sim-glass {
+  background: rgb(24 18 13 / 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgb(241 230 210 / 0.12);
+}
+
+/* Thanh trên */
+.sim-top {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+.sim-top > * {
+  pointer-events: auto;
+}
+.sim-title {
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: rgb(24 18 13 / 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgb(241 230 210 / 0.12);
+  min-width: 0;
+}
+.sim-title p {
+  font-size: var(--fs-xs);
+  color: var(--bronze-2);
+}
+.sim-title h1 {
+  font-size: clamp(1rem, 0.8rem + 0.8vw, 1.35rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sim-tools {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+.sim-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid rgb(241 230 210 / 0.16);
+  background: rgb(24 18 13 / 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--film-ink);
+  text-decoration: none;
+  transition: background-color var(--t-fast), border-color var(--t-fast);
+}
+.sim-icon:hover:not(:disabled) {
+  background: rgb(60 45 33 / 0.9);
+  border-color: var(--bronze-2);
+}
+.sim-icon:disabled {
+  opacity: 0.4;
+}
+.sim-icon.is-on {
+  background: var(--bronze);
+  border-color: var(--bronze-2);
+}
+.sim-icon-sm {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+}
+
+/* Danh sách chú thích bên trái */
+.sim-list {
+  position: absolute;
+  top: 76px;
+  left: 12px;
+  display: grid;
+  gap: 4px;
+  max-height: calc(100svh - 260px);
+  overflow-y: auto;
+  padding: 8px;
+  border-radius: 14px;
+  background: rgb(24 18 13 / 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgb(241 230 210 / 0.1);
+  width: 230px;
+}
+.sim-list button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--film-ink);
+  font-size: var(--fs-s);
+  text-align: left;
+}
+.sim-list button span {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgb(241 230 210 / 0.12);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+.sim-list button:hover {
+  background: rgb(241 230 210 / 0.08);
+}
+.sim-list button.is-active {
+  background: rgb(168 122 53 / 0.35);
+}
+.sim-list button.is-active span {
+  background: var(--bronze);
+}
+
+/* Điểm chú thích nổi trên cảnh */
+.sim-markers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.sim-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -16px 0 0 -16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  pointer-events: auto;
+  will-change: transform;
+}
+.sim-marker-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--crimson);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--fs-s);
+  border: 2px solid #fbf6ec;
+  box-shadow: 0 0 0 0 rgb(143 29 29 / 0.6), 0 4px 12px rgb(0 0 0 / 0.4);
+  animation: sim-pulse 2.4s infinite;
+}
+.sim-marker.is-active .sim-marker-dot {
+  background: var(--bronze);
+}
+.sim-marker-label {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgb(24 18 13 / 0.8);
+  color: var(--film-ink);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+.sim-marker:hover .sim-marker-label,
+.sim-marker:focus-visible .sim-marker-label,
+.sim-marker.is-active .sim-marker-label {
+  opacity: 1;
+  transform: none;
+}
+@keyframes sim-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(143 29 29 / 0.55), 0 4px 12px rgb(0 0 0 / 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgb(143 29 29 / 0), 0 4px 12px rgb(0 0 0 / 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(143 29 29 / 0), 0 4px 12px rgb(0 0 0 / 0.4);
+  }
+}
+
+/* Bảng thông tin chú thích */
+.sim-info {
+  position: absolute;
+  right: 12px;
+  top: 76px;
+  width: min(380px, calc(100vw - 24px));
+  padding: 18px 20px 20px;
+  border-radius: 16px;
+  background: rgb(24 18 13 / 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgb(241 230 210 / 0.14);
+  animation: modal-in var(--t-med) var(--ease-out);
+}
+.sim-info-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.sim-info-head p {
+  font-size: var(--fs-xs);
+  color: var(--bronze-2);
+}
+.sim-info h2 {
+  font-size: var(--fs-xl);
+  margin-bottom: 10px;
+}
+.sim-info > p {
+  font-size: var(--fs-s);
+  line-height: 1.7;
+  color: #e7dcc8;
+  user-select: text;
+}
+.sim-info-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+}
+.btn-ghost-light {
+  background: transparent;
+  border-color: rgb(241 230 210 / 0.35);
+  color: var(--film-ink);
+}
+.btn-ghost-light:hover {
+  border-color: var(--film-ink);
+}
+
+/* Hướng dẫn / nguồn */
+.sim-panel {
+  position: absolute;
+  top: 76px;
+  right: 12px;
+  width: min(400px, calc(100vw - 24px));
+  max-height: calc(100svh - 100px);
+  overflow-y: auto;
+  padding: 20px 22px;
+  border-radius: 16px;
+  background: rgb(24 18 13 / 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgb(241 230 210 / 0.14);
+  z-index: 5;
+}
+.sim-panel h2 {
+  font-size: var(--fs-l);
+  margin-bottom: 12px;
+}
+.sim-panel-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.sim-keys {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  font-size: var(--fs-s);
+}
+kbd {
+  display: inline-block;
+  min-width: 26px;
+  padding: 2px 6px;
+  margin-right: 4px;
+  border-radius: 5px;
+  background: rgb(241 230 210 / 0.12);
+  border: 1px solid rgb(241 230 210 / 0.25);
+  border-bottom-width: 2px;
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-align: center;
+}
+.sim-note {
+  margin-top: 12px;
+  font-size: var(--fs-xs);
+  color: var(--film-ink-2);
+  line-height: 1.6;
+}
+.sim-credits {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+  font-size: var(--fs-s);
+  color: #e7dcc8;
+}
+
+/* Nút điều khiển ảo */
+.sim-pad {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  pointer-events: none;
+}
+.sim-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 52px);
+  grid-template-rows: repeat(2, 52px);
+  gap: 6px;
+  pointer-events: auto;
+}
+.sim-dpad .up {
+  grid-column: 2;
+  grid-row: 1;
+}
+.sim-dpad .left {
+  grid-column: 1;
+  grid-row: 2;
+}
+.sim-dpad .down {
+  grid-column: 2;
+  grid-row: 2;
+}
+.sim-dpad .right {
+  grid-column: 3;
+  grid-row: 2;
+}
+.sim-side {
+  display: grid;
+  grid-template-columns: repeat(2, 52px);
+  gap: 6px;
+  pointer-events: auto;
+}
+.sim-pad-btn {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  border: 1px solid rgb(241 230 210 / 0.18);
+  background: rgb(24 18 13 / 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--film-ink);
+  touch-action: none;
+}
+.sim-pad-btn:active {
+  background: var(--bronze);
+}
+
+/* Nút kiểu Google Maps (chế độ bản đồ): cột dọc góc phải dưới */
+.sim-map {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+  pointer-events: none;
+}
+.sim-map > * {
+  pointer-events: auto;
+}
+.sim-map-btn {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid rgb(241 230 210 / 0.18);
+  background: rgb(24 18 13 / 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--film-ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--t-fast), border-color var(--t-fast);
+}
+.sim-map-btn:hover {
+  background: rgb(60 45 33 / 0.9);
+  border-color: var(--bronze-2);
+}
+.sim-map-btn:active {
+  background: var(--bronze);
+}
+.sim-compass {
+  border-radius: 50%;
+}
+.sim-map-text {
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.sim-map-zoom {
+  display: grid;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgb(241 230 210 / 0.18);
+}
+.sim-map-zoom .sim-map-btn {
+  border: 0;
+  border-radius: 0;
+}
+.sim-map-zoom .sim-map-btn + .sim-map-btn {
+  border-top: 1px solid rgb(241 230 210 / 0.14);
+}
+
+.sim-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  max-width: min(560px, calc(100vw - 340px));
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgb(24 18 13 / 0.78);
+  font-size: var(--fs-s);
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Màn hình chờ */
+.sim-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background:
+    radial-gradient(70% 60% at 50% 45%, rgb(60 42 28 / 0.65), rgb(18 13 9 / 0.96)),
+    url('/images/parchment-map.jpg') center / cover;
+  z-index: 10;
+}
+.sim-loading-card {
+  width: min(480px, 100%);
+  text-align: center;
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+}
+.sim-loading-kicker {
+  color: var(--bronze-2);
+  font-weight: 600;
+  font-size: var(--fs-s);
+}
+.sim-loading-card h2 {
+  font-size: var(--fs-2xl);
+}
+.sim-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(241 230 210 / 0.15);
+  overflow: hidden;
+}
+.sim-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--crimson), var(--bronze-2));
+  transition: width 300ms var(--ease-out);
+}
+.sim-loading-status {
+  font-size: var(--fs-s);
+  color: var(--film-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.sim-loading-tip {
+  font-size: var(--fs-xs);
+  color: var(--film-ink-2);
+  max-width: 40ch;
+}
+
+/* Trang "đang cập nhật" */
+.sim-pending {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background:
+    radial-gradient(70% 60% at 50% 45%, rgb(60 42 28 / 0.7), rgb(18 13 9 / 0.96)),
+    url('/images/parchment-map.jpg') center / cover;
+  color: var(--film-ink);
+}
+.sim-pending-card {
+  width: min(620px, 100%);
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+  text-align: center;
+}
+.sim-pending-card h1 {
+  font-size: var(--fs-2xl);
+}
+.sim-pending-card p {
+  color: var(--film-ink-2);
+}
+
+.sim-list-toggle {
+  display: none;
+}
+@media (max-width: 760px) {
+  .sim-list {
+    display: none;
+  }
+  /* Điện thoại: danh sách chú thích mở thành bảng trượt phía dưới */
+  .sim-list-toggle {
+    display: grid;
+  }
+  .sim-list.is-open {
+    display: grid;
+    top: auto;
+    bottom: 140px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: 46svh;
+    overflow-y: auto;
+    z-index: 6;
+  }
+  /* nút toàn màn hình (iPhone không hỗ trợ) */
+  .sim-tools .sim-icon:nth-child(5) {
+    display: none;
+  }
+  .sim-info {
+    top: auto;
+    bottom: 140px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-height: 42svh;
+    overflow-y: auto;
+  }
+  .sim-hint {
+    display: none;
+  }
+  .sim-title h1 {
+    font-size: 0.95rem;
+  }
+  /* điện thoại: các nút bản đồ xếp thành một hàng ngang ở dưới, không che bảng chú thích */
+  .sim-map {
+    grid-auto-flow: column;
+    align-items: end;
+    right: 12px;
+    bottom: 14px;
+  }
+  .sim-map-zoom {
+    grid-auto-flow: column;
+  }
+  .sim-map-zoom .sim-map-btn + .sim-map-btn {
+    border-top: 0;
+    border-left: 1px solid rgb(241 230 210 / 0.14);
+  }
+}
+@media (max-width: 480px) {
+  .sim-tools {
+    gap: 4px;
+  }
+  /* màn hình hẹp: ẩn bớt nút lưu ảnh để tên mô phỏng đủ chỗ */
+  .sim-tools .sim-icon:nth-child(4) {
+    display: none;
+  }
+  .sim-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .sim-title p {
+    display: none;
+  }
+  .sim-title {
+    padding: 6px 10px;
+  }
+  /* tên mô phỏng xuống tối đa 2 dòng thay vì bị cắt “…” */
+  .sim-title h1 {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.2;
+    font-size: 0.88rem;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) {
+  /* Máy tính: vẫn hiện nút ảo nhưng nhỏ gọn hơn */
+  .sim-pad-btn {
+    width: 46px;
+    height: 46px;
+  }
+  .sim-dpad {
+    grid-template-columns: repeat(3, 46px);
+    grid-template-rows: repeat(2, 46px);
+  }
+  .sim-side {
+    grid-template-columns: repeat(2, 46px);
+  }
+}
