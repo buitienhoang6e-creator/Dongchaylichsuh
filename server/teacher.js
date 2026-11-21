@@ -133,26 +133,34 @@ function terms(text) {
   return out;
 }
 
+// Tên sự kiện, nhân vật, địa danh được tính nặng hơn phần diễn giải.
+const importantText = (e) => [e.title, e.shortTitle, e.yearLabel, ...e.figures.map((f) => f.name), ...(e.places || []).map((p) => p.name)];
+
 const EVENT_TERMS = EVENTS.map((e) => {
-  // Tên sự kiện, nhân vật, địa danh được tính nặng hơn phần diễn giải.
-  const important = [e.title, e.shortTitle, e.yearLabel, ...e.figures.map((f) => f.name), ...(e.places || []).map((p) => p.name)];
   const body = [e.period, e.summary, e.context, ...e.timeline.map((t) => `${t.when} ${t.text}`), e.result, e.significance, ...(e.facts || [])];
   const tf = new Map();
   const add = (list, weight) => list.forEach((t) => tf.set(t, (tf.get(t) || 0) + weight));
-  important.forEach((s) => add(terms(s || ''), 3));
+  importantText(e).forEach((s) => add(terms(s || ''), 3));
   body.forEach((s) => add(terms(s || ''), 1));
   return tf;
 });
 
-// Chỉ dùng các cụm từ đặc trưng (xuất hiện ở không quá ~15% số sự kiện, tối thiểu 3);
-// cụm càng hiếm càng có trọng số cao.
+// Cụm từ nằm trong tên sự kiện / nhân vật / địa danh chính của từng sự kiện
+const EVENT_KEYS = EVENTS.map((e) => new Set(importantText(e).flatMap((s) => terms(s || ''))));
+
+// Cụm từ đặc trưng: xuất hiện ở không quá ~15% số sự kiện (tối thiểu 3); cụm càng hiếm càng có trọng số cao.
+// Cụm phổ biến hơn (ví dụ "Cổ Loa" được nhắc ở 12 sự kiện) vẫn được tính, nhưng CHỈ cho những sự kiện
+// có nó làm tên, nhân vật hay địa danh chính (Cổ Loa → An Dương Vương, Nhà Ngô) — để không bỏ sót sự kiện gốc.
 const MAX_DF = Math.max(3, Math.round(EVENTS.length * 0.15));
 const IDF = new Map();
+const IDF_COMMON = new Map();
 {
   const df = new Map();
   EVENT_TERMS.forEach((tf) => tf.forEach((_, t) => df.set(t, (df.get(t) || 0) + 1)));
   df.forEach((n, t) => {
-    if (n <= MAX_DF) IDF.set(t, Math.log(1 + EVENTS.length / n));
+    const w = Math.log(1 + EVENTS.length / n);
+    if (n <= MAX_DF) IDF.set(t, w);
+    else IDF_COMMON.set(t, w);
   });
 }
 
@@ -163,9 +171,12 @@ function scoreEvents(text) {
   return EVENTS.map((e, i) => {
     let score = 0;
     query.forEach((t) => {
-      const w = IDF.get(t);
       const n = EVENT_TERMS[i].get(t);
-      if (w && n) score += w * (1 + Math.log(n));
+      if (!n) return;
+      // Khớp đúng tên / nhân vật / địa danh chính của sự kiện thì tính gấp đôi
+      const key = EVENT_KEYS[i].has(t);
+      const w = (IDF.get(t) ?? (key ? IDF_COMMON.get(t) : 0)) * (key ? 2 : 1);
+      if (w) score += w * (1 + Math.log(n));
     });
     return { e, score };
   })
@@ -409,7 +420,7 @@ async function streamGroq({ messages, eventSlug, send, signal }) {
     messages: [{ role: 'system', content: groqSystem(selectEvents(messages, ev), ev) }, ...history],
     stream: true,
     max_completion_tokens: 1500,
-    temperature: Number.isFinite(t) && t >= 0 && t <= 2 ? t : 0.3,
+    temperature: Number.isFinite(t) && t >= 0 && t <= 2 ? t : 0.1,
   };
 
   let lastError = null;
