@@ -8,7 +8,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { describeError, getProvider, streamAnswer, validateMessages } from './server/teacher.js';
 import accountsRouter from './server/accounts.js';
-import { dataFile, getDb } from './server/db.js';
+import { dataLocation, initDb } from './server/db.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(here, 'dist');
@@ -123,13 +123,15 @@ if (fs.existsSync(DIST)) {
   );
 }
 
-getDb(); // mở (và tạo nếu chưa có) cơ sở dữ liệu tài khoản ngay khi khởi động
-
 app.listen(PORT, () => {
   console.log(`Dòng chảy lịch sử đang chạy tại http://localhost:${PORT}`);
   const provider = getProvider();
   console.log(
     `Giảng viên AI: ${provider ? `đã bật (${provider.name}, model ${provider.model})` : 'chưa cấu hình (thiếu GROQ_API_KEY hoặc ANTHROPIC_API_KEY)'}`,
   );
-  console.log(`Tài khoản người học: lưu tại ${dataFile()}`);
+  // Mở (và tạo bảng nếu chưa có) cơ sở dữ liệu tài khoản. Lỗi kết nối không làm sập trang:
+  // các trang học vẫn chạy, riêng phần tài khoản sẽ thử kết nối lại ở lần dùng sau.
+  initDb()
+    .then(() => console.log(`Tài khoản người học: lưu tại ${dataLocation()}`))
+    .catch((err) => console.error(`[tai-khoan] Chưa mở được cơ sở dữ liệu (${dataLocation()}):`, err?.message || err));
 });

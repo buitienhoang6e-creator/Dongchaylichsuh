@@ -1,0 +1,21 @@
+# Cấu hình đặt web lên Render (gói miễn phí). Trên Render: New → Blueprint → chọn repo này.
+# Render sẽ hỏi giá trị của 3 biến bí mật bên dưới (sync: false): bạn tự dán vào, không ghi vào file này.
+services:
+  - type: web
+    name: dong-chay-lich-su
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci && npm run build
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GROQ_API_KEY
+        sync: false
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false

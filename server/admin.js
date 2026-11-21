@@ -1,25 +1,23 @@
 import 'dotenv/config';
 import crypto from 'node:crypto';
-import { dataFile, getDb } from './db.js';
+import { dataLocation, db } from './db.js';
 import { hashPassword } from './accounts.js';
 
 /**
- * Công cụ quản trị tài khoản cho thầy cô / người quản lý trang web (chạy trên máy chủ):
+ * Công cụ quản trị tài khoản cho thầy cô / người quản lý trang web:
  *   npm run tai-khoan -- danh-sach
  *   npm run tai-khoan -- doi-mat-khau <tên đăng nhập>   (khi học sinh quên mật khẩu)
+ * Dữ liệu ở đâu thì công cụ đọc ở đó: file trong thư mục data/, hoặc Turso nếu .env có TURSO_DATABASE_URL.
  */
 
 const [cmd, name] = process.argv.slice(2);
-const db = getDb();
 
 if (cmd === 'danh-sach') {
-  const rows = db
-    .prepare(
-      `SELECT u.username, u.display_name, u.created_at, p.data
-       FROM users u LEFT JOIN progress p ON p.user_id = u.id ORDER BY u.created_at`,
-    )
-    .all();
-  console.log(`File dữ liệu: ${dataFile()}`);
+  const rows = await db.all(
+    `SELECT u.username, u.display_name, u.created_at, p.data
+     FROM users u LEFT JOIN progress p ON p.user_id = u.id ORDER BY u.created_at`,
+  );
+  console.log(`Dữ liệu: ${dataLocation()}`);
   console.log(`Có ${rows.length} tài khoản.`);
   for (const r of rows) {
     let learned = 0;
@@ -28,11 +26,11 @@ if (cmd === 'danh-sach') {
     } catch {
       /* bỏ qua */
     }
-    const created = new Date(r.created_at).toLocaleDateString('vi-VN');
+    const created = new Date(Number(r.created_at)).toLocaleDateString('vi-VN');
     console.log(`- ${r.username} (${r.display_name}) — tạo ngày ${created}, đã học ${learned} sự kiện`);
   }
 } else if (cmd === 'doi-mat-khau' && name) {
-  const user = db.prepare('SELECT id, username FROM users WHERE username = ?').get(name.trim().toLowerCase());
+  const user = await db.get('SELECT id, username FROM users WHERE username = ?', name.trim().toLowerCase());
   if (!user) {
     console.error(`Không tìm thấy tài khoản "${name}".`);
     process.exit(1);
@@ -40,8 +38,10 @@ if (cmd === 'danh-sach') {
   // Mật khẩu tạm 10 ký tự, bỏ các ký tự dễ nhầm (0/O, 1/l/I)
   const alphabet = 'abcdefghijkmnpqrstuvwxyz23456789';
   const temp = Array.from(crypto.randomBytes(10), (b) => alphabet[b % alphabet.length]).join('');
-  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(await hashPassword(temp), user.id);
-  db.prepare('DELETE FROM sessions WHERE user_id = ?').run(user.id);
+  await db.batch([
+    ['UPDATE users SET password_hash = ? WHERE id = ?', await hashPassword(temp), user.id],
+    ['DELETE FROM sessions WHERE user_id = ?', user.id],
+  ]);
   console.log(`Đã đặt mật khẩu tạm cho "${user.username}": ${temp}`);
   console.log('Hãy đưa mật khẩu này cho học sinh và nhắc đổi mật khẩu mới trong trang Tài khoản.');
 } else {
@@ -50,3 +50,6 @@ if (cmd === 'danh-sach') {
   console.log('  npm run tai-khoan -- doi-mat-khau <tên đăng nhập>');
   process.exit(cmd ? 1 : 0);
 }
+
+// Đóng kết nối cơ sở dữ liệu (nhất là Turso) để công cụ thoát ngay
+process.exit(0);

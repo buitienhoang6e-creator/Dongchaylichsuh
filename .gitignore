@@ -6,6 +6,9 @@ dist/
 # Cơ sở dữ liệu tài khoản người học (có mật khẩu đã băm) — không đưa lên GitHub
 data/
 *.log
+# Chương trình cloudflared (file .exe lớn) và link công khai tạm thời — không đưa lên GitHub
+tools/
+link-cong-khai.txt
 .DS_Store
 Thumbs.db
 .vscode/
