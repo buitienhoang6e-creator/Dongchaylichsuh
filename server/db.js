@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createClient } from '@libsql/client';
@@ -9,12 +10,16 @@ import { createClient } from '@libsql/client';
  * Hai chế độ, tự chọn theo biến môi trường:
  *  - Có TURSO_DATABASE_URL (+ TURSO_AUTH_TOKEN): lưu trên Turso (cơ sở dữ liệu trên mạng, có gói miễn phí).
  *    Dùng khi đặt web ở nơi không giữ được file, ví dụ Render miễn phí.
- *  - Không có: lưu vào file trong thư mục DATA_DIR (mặc định: dong-chay-lich-su/data/). Nhớ sao lưu file này.
+ *  - Không có: lưu vào file dong-chay-lich-su.db trong thư mục DATA_DIR. Nhớ sao lưu file này. Mặc định:
+ *      · chạy trên máy: dong-chay-lich-su/data/
+ *      · chạy trên Hostinger (ứng dụng Node.js trong hPanel): ~/dong-chay-lich-su-data/ — NGOÀI thư mục ứng dụng,
+ *        vì mỗi lần triển khai lại Hostinger tạo thư mục build mới (…/hbuilds/…) và bỏ thư mục cũ.
  *
  * Mọi hàm đều bất đồng bộ (async): get → một dòng, all → nhiều dòng, run → thực thi, batch → nhiều lệnh trong một giao dịch.
  */
 
 const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ON_HOSTINGER_BUILD = PROJECT_ROOT.split(path.sep).includes('hbuilds');
 const env = (name) => (process.env[name] || '').trim();
 
 export function usesTurso() {
@@ -22,7 +27,10 @@ export function usesTurso() {
 }
 
 export function dataFile() {
-  const dir = path.resolve(PROJECT_ROOT, env('DATA_DIR') || 'data');
+  let dir;
+  if (env('DATA_DIR')) dir = path.resolve(PROJECT_ROOT, env('DATA_DIR'));
+  else if (ON_HOSTINGER_BUILD) dir = path.join(os.homedir(), 'dong-chay-lich-su-data');
+  else dir = path.join(PROJECT_ROOT, 'data');
   return path.join(dir, 'dong-chay-lich-su.db');
 }
 
