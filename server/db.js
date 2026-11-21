@@ -1,19 +1,28 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 
 /**
  * Cơ sở dữ liệu tài khoản và tiến độ học — SQLite có sẵn trong Node.js (từ bản 22.13), không cần cài thêm.
- * File dữ liệu nằm trong thư mục DATA_DIR (mặc định: dong-chay-lich-su/data/). Nhớ sao lưu file này.
+ * File dữ liệu nằm trong thư mục DATA_DIR. Mặc định:
+ *  - chạy trên máy: dong-chay-lich-su/data/
+ *  - chạy trên Hostinger (ứng dụng Node.js trong hPanel): ~/dong-chay-lich-su-data/ — NGOÀI thư mục ứng dụng,
+ *    vì mỗi lần triển khai lại Hostinger tạo thư mục build mới (…/hbuilds/…) và bỏ thư mục cũ.
+ * Nhớ sao lưu file này.
  */
 
 const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ON_HOSTINGER_BUILD = PROJECT_ROOT.split(path.sep).includes('hbuilds');
 
 let db = null;
 
 export function dataFile() {
-  const dir = path.resolve(PROJECT_ROOT, process.env.DATA_DIR || 'data');
+  let dir;
+  if (process.env.DATA_DIR) dir = path.resolve(PROJECT_ROOT, process.env.DATA_DIR);
+  else if (ON_HOSTINGER_BUILD) dir = path.join(os.homedir(), 'dong-chay-lich-su-data');
+  else dir = path.join(PROJECT_ROOT, 'data');
   return path.join(dir, 'dong-chay-lich-su.db');
 }
 

@@ -137,21 +137,28 @@ Gói Premium/Single chỉ chạy được web tĩnh.
 
 ### Cách A — Gói Business/Cloud (ứng dụng Node.js trong hPanel)
 
-1. Vào **hPanel** → **Websites** → **Add website** → chọn **Node.js Apps** (tên mục có thể thay đổi theo giao diện hPanel).
-2. Chọn **Import Git repository**, kết nối tài khoản GitHub và chọn kho `dong-chay-lich-su`, nhánh `main`.
-3. Cấu hình build:
-   - Node.js version: **22** trở lên (cần bản 22.13+ cho chức năng tài khoản)
-   - Build command: `npm run build`
-   - Start command / Entry file: `npm start` (file `server.js`)
-4. Thêm **Environment variables** (biến môi trường):
-   - `GROQ_API_KEY` = khóa API Groq của bạn (miễn phí)
+1. Vào **hPanel** → **Websites** → **Add Website** → **Node.js web app**.
+2. Chọn tên miền, hoặc bấm **Use temporary domain** để nhận ngay một địa chỉ miễn phí dạng `...hostingersite.com` (gắn tên miền riêng sau cũng được).
+3. Ở mục **Import your Git repository**: bấm **Connect with GitHub**, cho phép (Authorize) ứng dụng Hostinger trên GitHub, rồi chọn kho `Dongchaylichsuh` → **Next**.
+4. Ở **Build and output settings**:
+   - Framework preset: **Express** (nếu không có thì chọn **Other**)
+   - Branch: `main`
+   - Node.js version: **22.x** (cần bản 22.13 trở lên cho chức năng tài khoản; nếu nhật ký báo lỗi `node:sqlite` thì chọn **24.x**)
+   - Package manager: **npm**
+   - Build command: `build`
+   - Entry file: `server.js`
+5. Thêm **Environment Variables** (biến môi trường), mỗi biến bấm **Add environment variable**:
+   - `GROQ_API_KEY` = khóa API Groq (người quản lý tự dán; **không** đưa khóa vào mã nguồn)
    - `NODE_ENV` = `production`
    - (Nếu dùng Claude thay cho Groq: `AI_PROVIDER` = `claude`, `ANTHROPIC_API_KEY` = khóa Anthropic, `CLAUDE_MODEL` = `claude-haiku-5-5` hoặc `claude-opus-5-5`)
-   - `DATA_DIR` = một thư mục **nằm ngoài** thư mục ứng dụng, ví dụ `/home/<tài-khoản-hostinger>/dong-chay-data`, để dữ liệu tài khoản người học không bị xóa mỗi lần triển khai lại (xem mục 7b)
-5. Bấm **Deploy**. Sau khi chạy xong, gắn tên miền và bật SSL (HTTPS) trong hPanel.
-6. Mỗi lần `git push` lên GitHub, bấm **Redeploy** (hoặc bật tự động triển khai nếu hPanel hỗ trợ).
+   - `DATA_DIR`: **không cần đặt**. Trên Hostinger, dữ liệu tài khoản tự lưu ở `~/dong-chay-lich-su-data/`, nằm ngoài thư mục ứng dụng nên không bị xóa khi triển khai lại (mỗi lần triển khai, Hostinger tạo thư mục build mới trong `.../hbuilds/` và bỏ thư mục cũ).
+6. Bấm **Continue** → **Deploy**. Xem tiến trình ở **Deployments**, nhật ký máy chủ ở **Runtime Logs** (dòng “Tài khoản người học: lưu tại …” cho biết chỗ lưu dữ liệu).
+7. Từ đó, mỗi lần `git push` lên nhánh `main`, Hostinger **tự động** cài đặt, build và khởi động lại. Sửa biến môi trường xong bấm lưu cũng tự triển khai lại.
+8. Gắn tên miền riêng: trên bảng điều khiển của web, bấm **Connect domain** và làm theo hướng dẫn DNS; chứng chỉ SSL (HTTPS) tự cài khi tên miền đã trỏ về Hostinger.
 
 Kiểm tra: mở `https://ten-mien-cua-ban/api/health` — nếu thấy `"ai": true` là giảng viên AI đã sẵn sàng (`"provider"` cho biết đang dùng Groq hay Claude).
+
+Lưu ý: gói Business/Cloud không chạy được lệnh `npm` qua SSH, nên lệnh quản lý tài khoản ở mục 7b (đặt lại mật khẩu) có thể không dùng được trên Hostinger; khi đó học sinh quên mật khẩu thì tạo tài khoản mới. Web cũng có thể “ngủ” khi lâu không có ai truy cập; lượt mở đầu tiên sau đó sẽ chậm vài giây.
 
 ### Cách B — VPS (Ubuntu)
 
