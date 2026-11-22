@@ -252,6 +252,8 @@
 }
 .nav-link {
   position: relative;
+  /* không gãy dòng: thiếu chỗ thì chuyển sang nút menu (xem @media 1279px bên dưới) */
+  white-space: nowrap;
   padding: 10px 12px;
   font-size: var(--fs-s);
   font-weight: 500;
@@ -370,7 +372,8 @@
   margin-top: 12px;
 }
 
-@media (max-width: 1000px) {
+/* Thanh menu đầy đủ cần khoảng 1.265 px (tên trang in hoa + 4 mục + 3 nút): hẹp hơn thì dùng nút menu */
+@media (max-width: 1279px) {
   .nav-links,
   .nav-account,
   .nav-cta {
@@ -408,7 +411,7 @@
     font-size: 0.86rem;
   }
 }
-@media (min-width: 1001px) {
+@media (min-width: 1280px) {
   .nav-mobile {
     display: none;
   }
