@@ -1,5 +1,5 @@
 # Cấu hình đặt web lên Render (gói miễn phí). Trên Render: New → Blueprint → chọn repo này.
-# Render sẽ hỏi giá trị của 3 biến bí mật bên dưới (sync: false): bạn tự dán vào, không ghi vào file này.
+# Render sẽ hỏi giá trị của 4 biến bí mật bên dưới (sync: false): bạn tự dán vào, không ghi vào file này.
 services:
   - type: web
     name: dong-chay-lich-su
@@ -18,4 +18,7 @@ services:
       - key: TURSO_DATABASE_URL
         sync: false
       - key: TURSO_AUTH_TOKEN
+        sync: false
+      # Mật khẩu xem trang /thong-ke (thống kê lượt truy cập); bỏ trống thì trang này tắt
+      - key: STATS_PASSWORD
         sync: false

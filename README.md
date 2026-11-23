@@ -272,6 +272,25 @@ npm run tai-khoan -- doi-mat-khau <tên đăng nhập>
   Lệnh thứ hai in ra một mật khẩu tạm; đưa cho học sinh và nhắc đổi mật khẩu mới trong trang Tài khoản.
 - Trang dành cho học sinh (có em dưới 16 tuổi): trước khi mở cho nhiều người dùng, nên hỏi ý kiến thầy cô / nhà trường về quy định bảo vệ dữ liệu cá nhân của trẻ em (Nghị định 13/2023/NĐ-CP).
 
+## 7c. Thống kê lượt truy cập
+
+Trang web tự đếm lượt xem (mã nguồn: `server/stats.js`, `src/lib/stats.js`), không dùng dịch vụ bên ngoài:
+
+- Mỗi lần mở một trang, trình duyệt báo cho máy chủ **đường dẫn trang** đó. Máy chủ cộng vào số lượt xem theo ngày (giờ Việt Nam) và theo trang.
+- **Số người xem trong ngày** được ước tính bằng mã băm của (ngày + IP + trình duyệt) với khóa bí mật. Mã đổi mỗi ngày nên không theo dõi được ai qua nhiều ngày; sang ngày mới, các mã cũ bị xóa, chỉ còn con số tổng. **Không cookie, không lưu IP.**
+- Không đếm: bot / công cụ tự động, trình duyệt bật *Do Not Track* hoặc *Global Privacy Control*, chính trang thống kê. Đường dẫn không có thật được gom vào mục "(trang khác)".
+- Số liệu lưu cùng chỗ với tài khoản (file trong `data/` hoặc Turso).
+
+Xem số liệu bằng một trong hai cách:
+
+```bash
+npm run tai-khoan -- thong-ke
+```
+
+hoặc mở trang **`/thong-ke`** trên web (không có trên thanh menu) và nhập mật khẩu quản trị. Trang này chỉ bật khi máy chủ có biến
+`STATS_PASSWORD` (trong `.env`, hoặc trong mục Environment của Render). Trang có: lượt xem / người xem hôm nay, 7 ngày, 30 ngày;
+biểu đồ từng ngày (kèm bảng số); 10 trang được xem nhiều nhất; số tài khoản người học.
+
 ## 8. Nguồn tư liệu và giấy phép
 
 - Nội dung chữ: biên soạn theo SGK Lịch sử (Bộ GD&ĐT), Đại Việt sử ký toàn thư.

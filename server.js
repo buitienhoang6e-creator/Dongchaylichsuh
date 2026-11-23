@@ -8,6 +8,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { describeError, getProvider, streamAnswer, validateMessages } from './server/teacher.js';
 import accountsRouter from './server/accounts.js';
+import statsRouter from './server/stats.js';
 import { dataLocation, initDb } from './server/db.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -95,6 +96,9 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
   }
   res.end();
 });
+
+// Thống kê lượt truy cập (/api/stats/view, /api/stats/summary) — không cookie, không lưu IP
+app.use('/api', statsRouter);
 
 // Tài khoản người học và tiến độ học (/api/auth/..., /api/progress)
 app.use('/api', accountsRouter);

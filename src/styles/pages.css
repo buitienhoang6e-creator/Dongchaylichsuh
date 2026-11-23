@@ -1763,3 +1763,189 @@
     filter: none;
   }
 }
+
+/* ---------- Thống kê lượt truy cập (/thong-ke) ---------- */
+.stats-page .page-head h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.stats-icon {
+  color: var(--crimson);
+  flex-shrink: 0;
+}
+.stats-login {
+  max-width: 420px;
+  display: grid;
+  gap: 16px;
+}
+.stats-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.stats-since {
+  font-size: var(--fs-s);
+  color: var(--ink-3);
+}
+.stats-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.stats-tile,
+.stats-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-l);
+}
+.stats-tile {
+  padding: 18px 20px;
+}
+.stats-tile-label {
+  font-size: var(--fs-s);
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.stats-tile-value {
+  margin: 6px 0 2px;
+  font-family: var(--font-display);
+  font-weight: var(--fw-display);
+  font-size: clamp(1.9rem, 1.4rem + 1.5vw, 2.6rem);
+  line-height: 1.1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.stats-tile-sub {
+  font-size: var(--fs-s);
+  color: var(--ink-2);
+}
+.stats-card {
+  padding: 20px 22px;
+  margin-bottom: 22px;
+}
+.stats-card h2 {
+  font-size: var(--fs-l);
+  margin-bottom: 14px;
+}
+.stats-chart {
+  position: relative;
+  width: 100%;
+}
+.stats-chart svg {
+  display: block;
+  overflow: visible;
+  touch-action: pan-y;
+}
+.stats-chart svg:focus-visible {
+  outline: 2px solid var(--crimson);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+.stats-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.stats-axis {
+  fill: var(--ink-3);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.stats-bar {
+  fill: var(--crimson);
+}
+.stats-bar.is-active {
+  opacity: 0.78;
+}
+.stats-hover {
+  fill: var(--ink);
+  opacity: 0.05;
+}
+.stats-tip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--line-2);
+  box-shadow: 0 8px 24px -12px rgb(0 0 0 / 0.45);
+  font-size: var(--fs-s);
+  color: var(--ink-2);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.stats-tip strong {
+  color: var(--ink);
+}
+.stats-table {
+  margin-top: 14px;
+  font-size: var(--fs-s);
+}
+.stats-table summary {
+  cursor: pointer;
+  color: var(--crimson);
+  font-weight: 600;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+.stats-table table {
+  width: 100%;
+  max-width: 420px;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.stats-table th,
+.stats-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+}
+.stats-table th:first-child,
+.stats-table td:first-child {
+  text-align: left;
+}
+.stats-top {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.stats-top li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: 'name value' 'bar bar';
+  gap: 4px 12px;
+  font-size: var(--fs-s);
+}
+.stats-top-name {
+  grid-area: name;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stats-top-value {
+  grid-area: value;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.stats-top-bar {
+  grid-area: bar;
+  height: 6px;
+  width: var(--w);
+  border-radius: 0 4px 4px 0;
+  background: var(--crimson);
+}
+.stats-empty {
+  color: var(--ink-3);
+}

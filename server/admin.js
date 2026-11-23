@@ -2,6 +2,7 @@ import 'dotenv/config';
 import crypto from 'node:crypto';
 import { dataLocation, db } from './db.js';
 import { hashPassword } from './accounts.js';
+import { getSummary } from './stats.js';
 
 /**
  * Công cụ quản trị tài khoản cho thầy cô / người quản lý trang web:
@@ -44,10 +45,27 @@ if (cmd === 'danh-sach') {
   ]);
   console.log(`Đã đặt mật khẩu tạm cho "${user.username}": ${temp}`);
   console.log('Hãy đưa mật khẩu này cho học sinh và nhắc đổi mật khẩu mới trong trang Tài khoản.');
+} else if (cmd === 'thong-ke') {
+  const s = await getSummary();
+  const n = (x) => x.toLocaleString('vi-VN');
+  const d = (day) => day.split('-').reverse().join('/');
+  console.log(`Dữ liệu: ${dataLocation()}`);
+  console.log(`Thống kê lượt truy cập (giờ Việt Nam)${s.since ? `, bắt đầu đếm từ ${d(s.since)}` : ''}:`);
+  console.log(`  Hôm nay (${d(s.today)}): ${n(s.totals.today.views)} lượt xem, ${n(s.totals.today.visitors)} người xem`);
+  console.log(`  7 ngày qua:   ${n(s.totals.week.views)} lượt xem, ${n(s.totals.week.visitors)} lượt người xem (cộng theo ngày)`);
+  console.log(`  30 ngày qua:  ${n(s.totals.month.views)} lượt xem, ${n(s.totals.month.visitors)} lượt người xem (cộng theo ngày)`);
+  console.log(`  Từ trước tới nay: ${n(s.totals.allViews)} lượt xem`);
+  console.log(`  Tài khoản: ${n(s.accounts.total)} (mới trong 7 ngày: ${n(s.accounts.newThisWeek)})`);
+  console.log('\nTừng ngày (14 ngày gần nhất):');
+  for (const x of s.series.slice(-14)) console.log(`  ${d(x.day)}  ${String(x.views).padStart(6)} lượt xem  ${String(x.visitors).padStart(5)} người`);
+  console.log('\nTrang được xem nhiều nhất (30 ngày):');
+  if (!s.topPages.length) console.log('  (chưa có lượt xem nào)');
+  for (const p of s.topPages) console.log(`  ${String(p.views).padStart(6)}  ${p.name}`);
 } else {
   console.log('Cách dùng:');
   console.log('  npm run tai-khoan -- danh-sach');
   console.log('  npm run tai-khoan -- doi-mat-khau <tên đăng nhập>');
+  console.log('  npm run tai-khoan -- thong-ke        (lượt truy cập web)');
   process.exit(cmd ? 1 : 0);
 }
 

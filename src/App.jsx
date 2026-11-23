@@ -13,16 +13,27 @@ import EventDetail from './pages/EventDetail.jsx';
 import MapPage from './pages/MapPage.jsx';
 import Account from './pages/Account.jsx';
 import { useScrollReveal } from './lib/motion.jsx';
+import { trackView } from './lib/stats.js';
 import NotFound from './pages/NotFound.jsx';
 
-// Hai trang nặng chỉ tải khi người học mở tới
+// Các trang nặng hoặc ít người mở chỉ tải khi cần
 const Simulation = lazy(() => import('./pages/Simulation.jsx'));
 const AITeacher = lazy(() => import('./pages/AITeacher.jsx'));
+const Stats = lazy(() => import('./pages/Stats.jsx'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
+/** Đếm một lượt xem mỗi khi chuyển trang (không cookie, không thông tin cá nhân). */
+function TrackViews() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    trackView(pathname);
   }, [pathname]);
   return null;
 }
@@ -47,6 +58,7 @@ export default function App() {
         Bỏ qua thanh điều hướng
       </a>
       <ScrollToTop />
+      <TrackViews />
       {!immersive && <Navbar />}
       <main id="noi-dung">
         <Suspense fallback={<PageLoading />}>
@@ -67,6 +79,7 @@ export default function App() {
             <Route path="/tai-khoan" element={<Account />} />
             <Route path="/dang-nhap" element={<Account />} />
             <Route path="/dang-ky" element={<Account initialMode="register" />} />
+            <Route path="/thong-ke" element={<Stats />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           </div>

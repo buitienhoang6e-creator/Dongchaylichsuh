@@ -67,6 +67,28 @@ const SCHEMA = `
     data       TEXT    NOT NULL,
     updated_at INTEGER NOT NULL
   );
+
+  -- Thống kê lượt xem (xem server/stats.js): chỉ lưu số đếm theo ngày và theo trang, không lưu IP hay cookie
+  CREATE TABLE IF NOT EXISTS page_views (
+    day   TEXT    NOT NULL,
+    path  TEXT    NOT NULL,
+    views INTEGER NOT NULL,
+    PRIMARY KEY (day, path)
+  );
+  -- Mã người xem của NGÀY HÔM NAY (mã băm đổi mỗi ngày); sang ngày mới chỉ giữ lại con số trong visitor_days
+  CREATE TABLE IF NOT EXISTS daily_visitors (
+    day     TEXT NOT NULL,
+    visitor TEXT NOT NULL,
+    PRIMARY KEY (day, visitor)
+  );
+  CREATE TABLE IF NOT EXISTS visitor_days (
+    day      TEXT    PRIMARY KEY,
+    visitors INTEGER NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS meta (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  );
 `;
 
 let ready = null;
