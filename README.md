@@ -2,6 +2,12 @@
 
 Trang web học lịch sử Việt Nam qua **cuộn phim tư liệu**, **video** và **mô hình 3D có thể tương tác**.
 
+**🌐 Xem trang web: [dong-chay-lich-su.onrender.com](https://dong-chay-lich-su.onrender.com)**
+
+> Trang chạy trên gói miễn phí của Render: nếu lâu không có ai vào, lần mở đầu tiên có thể mất khoảng 1 phút để trang khởi động.
+
+Tác giả: **Bùi Tiến Hoàng**, **Võ Minh Tuấn**.
+
 - 44 sự kiện theo niên biểu Chương trình GDPT 2018, chia 7 thời kỳ: từ dấu tích Người tối cổ, thời dựng nước Văn Lang – Âu Lạc, các quốc gia cổ Phù Nam – Chăm-pa, thời Bắc thuộc, các triều đại phong kiến, thời Pháp thuộc đến công cuộc Đổi mới và hội nhập quốc tế
 - Mỗi sự kiện: nội dung theo sách giáo khoa, video tiếng Việt đã kiểm chứng, 5 câu trắc nghiệm
 - 4 mô phỏng 3D tả thực: **Người tối cổ**, **Sơn Vi – Hòa Bình – Bắc Sơn**, **Thành Cổ Loa** và **Hội thề Hát Môn**, với hai chế độ điều khiển:
